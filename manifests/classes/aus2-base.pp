@@ -49,14 +49,6 @@ class aus2-base {
             mode  => 775,
 	    recurse=> false,
 	    ensure => directory;
-
-       '/etc/cron.d/aus2':
-           owner => root,
-           group => root,
-           mode => 644,
-           require => Exec['install-node-deps'],
-           ensure => present,
-           source => "/vagrant/files/etc_crond/aus2";
     }
 
     package {
@@ -82,6 +74,10 @@ class aus2-base {
 	managehome => true;
     }
 
+    group { 'puppet':
+        ensure => 'present',
+    }
+
     exec {
         '/usr/bin/apt-get update':
             alias => 'apt-get-update';
@@ -96,23 +92,17 @@ class aus2-base {
             creates => '/etc/apache2/mods-enabled/ssl.load',
             require => File['aus2-vhost'];
 
-        '/usr/bin/git clone git://github.com/rhelmer/aus2.git':
-            alias => 'git-clone',
+        '/usr/bin/cvs -d :pserver:anonymous@cvs-mirror.mozilla.org:/cvsroot co mozilla/webtools/aus':
+            alias => 'cvs-checkout',
             user => 'aus2',
             cwd => '/home/aus2/dev/',
             creates => '/home/aus2/dev/aus2',
-            require => [Package['git-core'], File['/home/aus2/dev']];
+            require => [Package['cvs'], File['/home/aus2/dev']];
 
-        '/usr/bin/git pull':
-            alias => 'git-pull',
-            user => 'aus2',
-            cwd => '/home/aus2/dev/aus2',
-            require => Exec['git-clone'];
-
-        '/usr/bin/rsync -av --exclude=".git" /home/aus2/dev/aus2/ /var/www/aus2/':
+        '/usr/bin/rsync -av --exclude="CVS" /home/aus2/dev/aus2/ /var/www/aus2/':
             alias => 'aus2-install',
             timeout => '3600',
-            require => [User[aus2], Exec[git-pull], Package[rsync], File['/var/www/aus2']],
+            require => [User[aus2], Exec[cvs-checkout], Package[rsync], File['/var/www/aus2']],
             user => 'aus2';
     }
 }
