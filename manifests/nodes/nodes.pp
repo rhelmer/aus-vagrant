@@ -1,4 +1,4 @@
 node default {
-    include graphs-base
+    include aus2-base
 }
 
