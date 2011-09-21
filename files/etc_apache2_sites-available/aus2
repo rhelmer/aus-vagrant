@@ -1,0 +1,11 @@
+<VirtualHost *:80>
+    # FIXME customize this
+    ServerName aus2
+    # FIXME customize this
+    ServerAdmin me@example.com
+    DocumentRoot /var/www/aus2
+    <Directory "/var/www/aus2
+        AllowOverride All
+    </Directory>
+</VirtualHost>
+
