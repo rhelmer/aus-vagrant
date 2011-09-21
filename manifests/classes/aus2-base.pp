@@ -99,7 +99,7 @@ class aus2-base {
             creates => '/home/aus2/dev/aus2',
             require => [Package['cvs'], File['/home/aus2/dev']];
 
-        '/usr/bin/rsync -av --exclude="CVS" /home/aus2/dev/aus2/ /var/www/aus2/':
+        '/usr/bin/rsync -av --exclude="CVS" /home/aus2/dev/mozilla/webtools/aus/ /var/www/aus2/':
             alias => 'aus2-install',
             timeout => '3600',
             require => [User[aus2], Exec[cvs-checkout], Package[rsync], File['/var/www/aus2']],
