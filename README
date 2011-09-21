@@ -14,10 +14,12 @@ $ gem install vagrant
 $ vagrant box add lucid64 http://files.vagrantup.com/lucid64.box
 $ vagrant up
 
-3) Add 33.33.33.10 to /etc/hosts:
-33.33.33.10	aus
+3) Add 33.33.34.10 to /etc/hosts:
+33.33.34.10	aus2
 
 4) Enjoy your Mozilla AUS environment!
+
+http://aus2/update/3/%PRODUCT%/%VERSION%/%BUILD_ID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/%OS_VERSION%/%DISTRIBUTION%/%DISTRIBUTION_VERSION%/update.xml 
 
 SSH into your VM:
 $ vagrant ssh
