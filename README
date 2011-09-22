@@ -25,8 +25,3 @@ curl 'http://aus2/update/3/Synthetic/1.0/7000000003/platform/locale/nightly/Wind
 
 SSH into your VM:
 $ vagrant ssh
-
-TODO
---
-* add .htaccess to puppet
-* add config.php to puppet
