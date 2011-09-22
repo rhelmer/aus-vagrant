@@ -59,7 +59,7 @@ define('UPDATE_VERSION','1.0+');
 define('UPDATE_EXTENSION_VERSION','1.0+');
 
 // Define cookie parameters
-define('COOKIE_NAME', 'aus2a');
+define('COOKIE_NAME', 'aus2');
 define('COOKIE_DOMAIN', 'aus2.mozilla.org');
 
 // Turns global throttling on and off.
@@ -81,38 +81,16 @@ define('THROTTLE_LOGGING',false);
 //
 // $productThrottling = array(
 //     'Firefox' => array(
-//         '3.0' => 10,
-//         '3.1' => 10
+//         '3.0' => array(
+//             'release' => 10 
+//         )
 //     )
 // );
 $productThrottling = array(
-     'Firefox' => array(
-         '3.6.22' => 0,
-         '3.6.23' => 0
-     )
-);
-
-// List of exceptions for throttling.
-//
-// $throttleExceptions = array(
-//    '3.0.11' => array(
-//       'betatest',
-//       'releasetest',
-//       'beta'
-//    )
-// );
-//
-// In this example, 3.0.11 with channel names that match these channels will not
-// be throttled unless there is a global throttle enabled.
-$throttleExceptions = array(
-    '3.6.22' => array (
-        'beta',
-        'betatest',
-        'releasetest'
-    ),
-    '3.6.23' => array (
-        'betatest',
-        'releasetest'
+    'Synthetic' => array(
+        '1.0' => array(
+            'channel' => 100
+        )
     )
 );
 
@@ -120,53 +98,25 @@ $throttleExceptions = array(
 // All other channels only have access to the OVERRIDE_DIR for update info.
 $nightlyChannels = array(
     'nightly',
-    'nightly-tracemonkey',
-    'nightly-electrolysis',
-    'nightly-mozilla-2.1',
-    'nightly-jaegermonkey',
-    'nightly-ux',
-    'nightly-maple',
-    'aurora',
-    'auroratest'
+    'nightly-branch'
 );
 
 // This hash defines the product->version->patch relationships for nightlies
 // It determines which patches are associated to which incoming client versions.
 // @todo replace this with a better datasource that can be easily managed via a GUI.
-// The ordering is !important!, given the wildcard block at the bottom.
 $productBranchVersions = array(
-    'Firefox'     =>  array(
-        '3.5*'    => 'mozilla-1.9.1',
-        '3.6*'    => 'mozilla-1.9.2',
-        '*'       => array(
-           'nightly'                 => 'mozilla-central',
-           'nightly-tracemonkey'     => 'tracemonkey',
-           'nightly-electrolysis'    => 'electrolysis',
-           'nightly-jaegermonkey'    => 'jaegermonkey',
-           'nightly-ux'              => 'ux',
-           'nightly-maple'           => 'maple',
-           'aurora'                  => 'mozilla-aurora',
-           'auroratest'              => 'mozilla-aurora-test'
-        )
-    ),
-    'Fennec'      =>  array(
-        '4.0*'    =>  array(
-           'nightly-mozilla-2.1'     => 'mozilla-2.1'
-        ),
-        '*'       => array(
-           'nightly'                 => 'mozilla-central',
-           'aurora'                  => 'mozilla-aurora'
-        )
-    ),
+    'Synthetic'   => array('1.5.0.*' => '1.5.0.x',
+                           '2.0.0.*' => array ('nightly'         => '2.0.0.x',
+                                               'nightly-branch'  => '2.0.0.x-branch'),
+    )
 );
 
 // Specify which release should be used for channel-changers wanting to go to 
 // release or beta channels.
 
 $latestRelease = array(
-    'Firefox' => array(
-        'beta' => '5.0',
-        'release' => '5.0'
+    'Synthetic' => array(
+        'channel' => '1.0',
     )
 );
 
@@ -190,11 +140,10 @@ $memcache_config = array(
 );
 
 /*
- * Array that defines which %OS_VERSION% values are no longer supported.
- * Applies to all updates and uses the version of the update to be 
+ * Applies to all updates and uses the version of the update to be
  * served to determine blocking (bug 666735). Previously only applied to
  * major updates, and used the version from the incoming URI (bug 418129)
- * Use of this array is in inc/patch.class.php.  
+ * Use of this array is in inc/patch.class.php.
  *
  * The Array format is considered to be:
  * array(
@@ -216,50 +165,16 @@ $memcache_config = array(
  * %OS_VERSION% triggers blocklisting of that OS).
  */
 $unsupportedPlatforms = array(
-    'Firefox'     =>  array(
-        // Mac 10.2/10.3, Win < 2k, GTK < 2.10 - bug 418129
-        '3.0b1+' => array(
+    'Synthetic'     =>  array(
+        '2.0'  => array(
+            'Windows_95'
+        ),
+        '2.0*' => array(
+            'Windows_98'
+        ),
+        '2.0+' => array(
             'Darwin 6',
             'Darwin 7',
-            'Windows_95',
-            'Windows_98',
-            'Windows_NT 4',
-            'GTK 2.0.',
-            'GTK 2.1.',
-            'GTK 2.2.',
-            'GTK 2.3.',
-            'GTK 2.4.',
-            'GTK 2.5.',
-            'GTK 2.6.',
-            'GTK 2.7.',
-            'GTK 2.8.',
-            'GTK 2.9.'
-        ),
-        // Mac 10.4 - bug 640044
-        // See index.php for PPC
-        '4.0b1+' => array(
-            'Darwin 8'
-        ),
-        // RHEL5 has too old libstdc++ - bug 655917
-        // Fx6 will ship with --enable-stdcxx-compat
-        '4.0*' => array(
-            '.el5'
-        ),
-        '5.0*' => array(
-            '.el5'
-        ),
-        // Too old freetype - bug 666735
-        '7.0a2+' => array(
-            'GTK 2.10.'
-        )
-    ),
-    'Thunderbird'     =>  array(
-        // Mac 10.2/10.3, Win < 2k, GTK < 2.10 - bug 418129
-        '3.0a1+' => array(
-            'Darwin 6',
-            'Darwin 7',
-            'Windows_95',
-            'Windows_98',
             'Windows_NT 4',
             'GTK 2.0.',
             'GTK 2.1.',
