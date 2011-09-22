@@ -19,8 +19,14 @@ $ vagrant up
 
 4) Enjoy your Mozilla AUS environment!
 
-http://aus2/update/3/%PRODUCT%/%VERSION%/%BUILD_ID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/%OS_VERSION%/%DISTRIBUTION%/%DISTRIBUTION_VERSION%/update.xml 
+# http://aus2/update/3/%PRODUCT%/%VERSION%/%BUILD_ID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/%OS_VERSION%/%DISTRIBUTION%/%DISTRIBUTION_VERSION%/update.xml 
+
+curl 'http://aus2/update/3/Synthetic/1.0/7000000003/platform/locale/nightly/Windows386/ACME/1.2.3/update.xml'
 
 SSH into your VM:
 $ vagrant ssh
 
+TODO
+--
+* add .htaccess to puppet
+* add config.php to puppet
