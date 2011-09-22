@@ -5,7 +5,8 @@ class aus2-base {
             enable => true,
             ensure => running,
             hasstatus => true,
-            require => [Package[apache2], Exec[enable-mod-ssl]];
+            require => [Package[apache2], Exec[enable-mod-ssl], 
+                        Exec[enable-mod-rewrite]];
     }
 
     file {
@@ -14,7 +15,24 @@ class aus2-base {
 	    group => root,
 	    mode => 644,
 	    ensure => present,
+            require => Exec['aus2-install'],
 	    source => "/vagrant/files/hosts";
+
+	'/var/www/aus2/.htaccess':
+	    owner => aus2,
+	    group => aus2,
+	    mode => 644,
+	    ensure => present,
+            require => Exec['aus2-install'],
+	    source => "/vagrant/files/aus2-configs/htaccess";
+
+	'/var/www/aus2/inc/config.php':
+	    owner => aus2,
+	    group => aus2,
+	    mode => 644,
+	    ensure => present,
+            require => Exec['aus2-install'],
+	    source => "/vagrant/files/aus2-configs/config.php";
 
         '/var/www/aus2':
             owner => aus2,
@@ -56,7 +74,7 @@ class aus2-base {
             ensure => latest,
             require => [Exec['apt-get-update']];
 
-        'libapache2-mod-wsgi':
+        'libapache2-mod-php5':
             require => Package[apache2],
             ensure => 'present';
 
@@ -91,6 +109,10 @@ class aus2-base {
             alias => 'enable-mod-ssl',
             creates => '/etc/apache2/mods-enabled/ssl.load',
             require => File['aus2-vhost'];
+ 
+        '/usr/sbin/a2enmod rewrite':
+            alias => 'enable-mod-rewrite',
+            require => File['aus2-vhost'];
 
         '/usr/bin/cvs -d :pserver:anonymous@cvs-mirror.mozilla.org:/cvsroot co mozilla/webtools/aus':
             alias => 'cvs-checkout',
@@ -99,10 +121,16 @@ class aus2-base {
             creates => '/home/aus2/dev/aus2',
             require => [Package['cvs'], File['/home/aus2/dev']];
 
-        '/usr/bin/rsync -av --exclude="CVS" /home/aus2/dev/mozilla/webtools/aus/ /var/www/aus2/':
+        '/usr/bin/rsync -av --exclude="CVS" /home/aus2/dev/mozilla/webtools/aus/xml/ /var/www/aus2/':
             alias => 'aus2-install',
             timeout => '3600',
             require => [User[aus2], Exec[cvs-checkout], Package[rsync], File['/var/www/aus2']],
+            user => 'aus2';
+
+        '/usr/bin/rsync -av --exclude="CVS" /home/aus2/dev/mozilla/webtools/aus/tests/data/ /var/www/aus2/data/':
+            alias => 'aus2-test-data',
+            timeout => '3600',
+            require => [Exec[aus2-install]],
             user => 'aus2';
     }
 }
