@@ -110,6 +110,9 @@ class aus2-base {
         'rsync':
             ensure => 'present';
 
+        'python-software-properties':
+            ensure => 'present';
+
         'openjdk-6-jre-headless':
             require => Exec['apt-get-update'],
 	    ensure => present;
