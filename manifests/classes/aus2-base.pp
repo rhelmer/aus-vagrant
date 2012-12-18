@@ -113,9 +113,9 @@ class aus2-base {
         'python-software-properties':
             ensure => 'present';
 
-        'sun-java6-jdk':
-            require => [Exec['apt-get-update'], Exec['accept-java']],
-            ensure => present;
+        'openjdk-6-jre-headless':
+            require => Exec['apt-get-update'],
+	    ensure => present;
     }
 
     user { 'aus2':
@@ -166,24 +166,11 @@ class aus2-base {
             require => [Exec[aus2-install]],
             user => 'aus2';
 
-        '/usr/bin/sudo add-apt-repository "deb http://archive.canonical.com/ lucid partner"':
-            alias => 'add-partner-repo',
-            unless => '/bin/grep "^deb http://archive.canonical.com/ lucid partner" /etc/apt/sources.list',
-            require => Package['python-software-properties'];
-
-        'update-partner-repo':
-            require => Exec['add-partner-repo'],
-            command => '/usr/bin/apt-get update';
-
-        '/bin/echo sun-java6-jdk shared/accepted-sun-dlj-v1-1 boolean true | debconf-set-selections':
-            alias => 'accept-java',
-            require => Exec['update-partner-repo'];
-
         '/usr/bin/java -jar /vagrant/files/fitnesse/fitnesse.jar -i':
             alias => 'install-fitnesse',
             user => 'aus2',
             cwd => '/home/aus2/dev/',
-            require => Exec['accept-java'];
+            require => Package['openjdk-6-jre-headless'];
 
          '/bin/tar -zxf /vagrant/files/fitnesse/pyfit.tgz':
             alias => 'install-pyfit',
